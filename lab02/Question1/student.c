@@ -28,8 +28,36 @@
 #include <stdbool.h>
 #include <stddef.h>  // size_t
 #include <string.h>  // strlen
+#include <stdlib.h>
 
 bool isValid(const char *s) {
+    if (s == NULL) return true;
+    size_t length = strlen(s);
+    char *stack = (char *)malloc(length);
+    size_t top = 0;
+    if (length % 2 == 1) return false;
+    for (int i = 0; i < (int)length; i++){
+        if (s[i] == '(' || s[i] == '[' || s[i] == '{'){
+            stack[top++] = s[i];
+        }
+        else {
+            if (top == 0) {
+                free(stack);
+                return false;
+            }
+            char last = stack[top - 1];
+            if ((s[i] == ')' && last != '(') ||
+                (s[i] == ']' && last != '[') ||
+                (s[i] == '}' && last != '{')) {
+                free(stack);
+                return false;
+            }
+            top--;
+        }
+    }
+
+    
+    free(stack);
     // TODO: Implement using a stack.
     //
     // Recommended approach:
@@ -55,5 +83,5 @@ bool isValid(const char *s) {
     // - Input contains only bracket characters, per the prompt.
 
     (void)s; // remove after implementing
-    return false; // placeholder
+    return true; // placeholder
 }
