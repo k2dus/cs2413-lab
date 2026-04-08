@@ -63,7 +63,22 @@ Return an array of size 2 containing the indices of the two numbers
 whose sum equals target.
 */
 int* twoSum(int* nums, int numsSize, int target, int* returnSize) {
-    /* Write your code here */
+    Node* table[TABLE_SIZE] = {NULL};
+    int* ret = malloc(2 * sizeof(int));
+    for(int i = 0; i < numsSize ;i++){
+        int result = target - nums[i];
+        int value;
+        if(find(table, result, &value)){
+            ret[0] = value;
+            ret[1] = i;
+            freeTable(table);
+            *returnSize = 2;
+            return ret;
+        }
+        else{
+            insert(table, nums[i], i);
+        }
+    }
 
     *returnSize = 0;
     return NULL;
@@ -73,15 +88,18 @@ int* twoSum(int* nums, int numsSize, int target, int* returnSize) {
 Optional helper: compute a hash index for a key.
 */
 static int hash(int key) {
-    /* Write your code here if you use this helper */
-    return 0;
+    return abs(key) % TABLE_SIZE;
 }
 
 /*
 Optional helper: insert (key, value) into the hash table.
 */
 static void insert(Node* table[], int key, int value) {
-    /* Write your code here if you use this helper */
+    Node* node = malloc(sizeof(Node));
+    node->next = table[hash(key)];
+    table[hash(key)] = node;
+    node->key = key;
+    node->value = value;
 }
 
 /*
@@ -90,7 +108,14 @@ If found, store the associated value in *value and return 1.
 Otherwise return 0.
 */
 static int find(Node* table[], int key, int* value) {
-    /* Write your code here if you use this helper */
+    Node* cur = table[hash(key)];
+    while (cur != NULL) {
+        if(cur->key == key){
+            *value = cur->value;
+            return 1;
+        }
+        cur = cur->next;
+    }
     return 0;
 }
 
@@ -98,5 +123,12 @@ static int find(Node* table[], int key, int* value) {
 Optional helper: free all memory used by the hash table.
 */
 static void freeTable(Node* table[]) {
-    /* Write your code here if you use this helper */
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        Node* current = table[i];
+        while (current) {
+            Node* temp = current->next;
+            free(current);
+            current = temp;
+        }
+    }
 }
